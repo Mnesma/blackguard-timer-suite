@@ -1,5 +1,3 @@
-import { View, views } from "../constants.js";
-
 export class KeyBindingInput {
   #input;
   value;
