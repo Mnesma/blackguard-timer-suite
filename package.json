@@ -1,0 +1,25 @@
+{
+  "name": "blackguard-timer-suite",
+  "version": "1.0.0",
+  "description": "A suite of timers used for Maplestory",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "make": "electron-forge make"
+  },
+  "author": "Mnesma",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "6.4.2",
+    "@electron-forge/maker-deb": "6.4.2",
+    "@electron-forge/maker-rpm": "6.4.2",
+    "@electron-forge/maker-squirrel": "6.4.2",
+    "@electron-forge/maker-zip": "6.4.2",
+    "@electron-forge/plugin-auto-unpack-natives": "6.4.2",
+    "electron": "26.2.0"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "1.0.0",
+    "node-global-key-listener": "0.1.1"
+  }
+}
