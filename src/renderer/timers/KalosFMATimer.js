@@ -12,9 +12,11 @@ export class KalosFMATimer extends SinglePhasTimer {
     position: WidgetLocation.TopRight
   });
 
+  #testIndicatorTurnOffTimer = null;
+
   constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
     super({
-      initialDuration: Minute * 2.5,
+      initialDuration: Minute * 0.5,
       urgencyDuration: Second * 10,
       name: "Kalos FMA",
       keyBindingInfo
@@ -42,16 +44,29 @@ export class KalosFMATimer extends SinglePhasTimer {
       },
       "Toggle Test Padding": () => {
         if (this.status === TimerStatus.Active) {
-          this.#testIndicatorWidget.toggle();
         
           if (this.#testIndicatorWidget.isOn) {
-            this.adjustDuration(Second * 50);
+            this.#stopTest();
           } else {
-            this.adjustDuration(Second * -50);
+            this.#startTest();
           }
         }
       }
     }
+  }
+
+  #startTest() {
+    this.#testIndicatorWidget.on();
+    this.adjustDuration(Second * 50);
+    this.#testIndicatorTurnOffTimer = setTimeout(() => {
+      this.#testIndicatorWidget.off();
+    }, Second * 50);
+  }
+
+  #stopTest() {
+    this.#testIndicatorWidget.off();
+    this.adjustDuration(Second * -50);
+    clearTimeout(this.#testIndicatorTurnOffTimer);
   }
 
   getWidgets() {

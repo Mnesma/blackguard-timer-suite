@@ -179,7 +179,7 @@ export class SinglePhasTimer extends EventTarget {
   #draw() {
     const progressPercent = this.#elapsedTime * 100 / this.#duration || 0;
     const circumference = 508.68;
-    const secondsRemaining = Math.round(this.timeRemaining / Second);
+    const secondsRemaining = Math.max(Math.round(this.timeRemaining / Second), 0);
     SinglePhasTimer.#RemainingTimeIndicatorElement.setAttribute("stroke-dashoffset", `${Math.max((100 - progressPercent) * circumference / 100, 0)}px`);
     SinglePhasTimer.#RemainingTimeLabelElement.textContent = secondsRemaining;
   }
