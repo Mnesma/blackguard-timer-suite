@@ -16,7 +16,7 @@ export class KalosFMATimer extends SinglePhasTimer {
 
   constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
     super({
-      initialDuration: Minute * 0.5,
+      initialDuration: Minute * 2.5,
       urgencyDuration: Second * 10,
       name: "Kalos FMA",
       keyBindingInfo
@@ -27,7 +27,7 @@ export class KalosFMATimer extends SinglePhasTimer {
     return [
       { key: "F12", actionName: "Start/Restart" },
       { key: "F11", actionName: "Add Bind Time" },
-      { key: "F10", actionName: "Toggle Test Padding" },
+      { key: "F10", actionName: "Pause For Test" },
     ];
   }
 
@@ -38,12 +38,12 @@ export class KalosFMATimer extends SinglePhasTimer {
         this.#testIndicatorWidget.off();
       },
       "Add Bind Time": () => {
-        if (this.status === TimerStatus.Active) {
+        if (this.status !== TimerStatus.Inactive) {
           this.adjustDuration(Second * 10);
         }
       },
-      "Toggle Test Padding": () => {
-        if (this.status === TimerStatus.Active) {
+      "Pause For Test": () => {
+        if (this.status !== TimerStatus.Inactive) {
         
           if (this.#testIndicatorWidget.isOn) {
             this.#stopTest();
@@ -57,15 +57,15 @@ export class KalosFMATimer extends SinglePhasTimer {
 
   #startTest() {
     this.#testIndicatorWidget.on();
-    this.adjustDuration(Second * 50);
+    this.pause();
     this.#testIndicatorTurnOffTimer = setTimeout(() => {
-      this.#testIndicatorWidget.off();
+      this.#stopTest();
     }, Second * 50);
   }
 
   #stopTest() {
     this.#testIndicatorWidget.off();
-    this.adjustDuration(Second * -50);
+    this.resume();
     clearTimeout(this.#testIndicatorTurnOffTimer);
   }
 
