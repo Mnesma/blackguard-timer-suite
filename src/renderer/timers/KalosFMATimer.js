@@ -6,36 +6,46 @@ import {
   WidgetLocation
 } from "../constants.js";
 import { IndicatorWidget } from "../models/IndicatorWidet.js";
+import { CountdownTimerWidget } from "../models/CountdownTimerWidget.js";
+
+const DefaultKeyBindings = [
+  { key: "F12", actionName: "Start/Restart" },
+  { key: "F11", actionName: "Add Bind Time" },
+  { key: "F10", actionName: "Pause For Test" },
+];
 
 export class KalosFMATimer extends SinglePhasTimer {
   #testIndicatorWidget = new IndicatorWidget({
     position: WidgetLocation.TopRight
   });
 
-  #testIndicatorTurnOffTimer = null;
+  #testTimerWidget = new CountdownTimerWidget({
+    duration: Second * 50,
+    position: WidgetLocation.TopRight,
+  });
 
-  constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
+  constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
       initialDuration: Minute * 2.5,
       urgencyDuration: Second * 10,
       name: "Kalos FMA",
       keyBindingInfo
     });
+
+    this.#testTimerWidget.addEventListener("timerend", this.#stopTest);
+    this.#testTimerWidget.classList.add("kalos-test-timer-text");
+    this.#testTimerWidget.hide();
   }
 
   getDefaultKeyBindingInfo() {
-    return [
-      { key: "F12", actionName: "Start/Restart" },
-      { key: "F11", actionName: "Add Bind Time" },
-      { key: "F10", actionName: "Pause For Test" },
-    ];
+    return DefaultKeyBindings;
   }
 
   getActions() {
     return {
       "Start/Restart": () => {
         this.start();
-        this.#testIndicatorWidget.off();
+        this.#stopTest();
       },
       "Add Bind Time": () => {
         if (this.status !== TimerStatus.Inactive) {
@@ -58,20 +68,21 @@ export class KalosFMATimer extends SinglePhasTimer {
   #startTest() {
     this.#testIndicatorWidget.on();
     this.pause();
-    this.#testIndicatorTurnOffTimer = setTimeout(() => {
-      this.#stopTest();
-    }, Second * 50);
+    this.#testTimerWidget.show();
+    this.#testTimerWidget.start();
   }
 
-  #stopTest() {
+  #stopTest = () => {
     this.#testIndicatorWidget.off();
     this.resume();
-    clearTimeout(this.#testIndicatorTurnOffTimer);
-  }
+    this.#testTimerWidget.hide();
+    this.#testTimerWidget.stop();
+  };
 
   getWidgets() {
     return [
-      this.#testIndicatorWidget
+      this.#testIndicatorWidget,
+      this.#testTimerWidget
     ];
   }
 }

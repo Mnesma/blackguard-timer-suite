@@ -7,6 +7,12 @@ import {
 } from "../constants.js";
 import { TextWidget } from "../models/TextWidget.js";
 
+const DefaultKeyBindings = [
+  { key: "F12", actionName: "Start/Add System" },
+  { key: "F11", actionName: "Remove System" },
+  { key: "F10", actionName: "Stop and Reset" },
+];
+
 export class KalosSystemsTimer extends SinglePhasTimer {
   #systemsCountWidget = new TextWidget({
     text: "0",
@@ -14,7 +20,7 @@ export class KalosSystemsTimer extends SinglePhasTimer {
   });
   #systemsCount = 0;
 
-  constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
+  constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
       initialDuration: Minute,
       urgencyDuration: Second * 10,
@@ -24,11 +30,7 @@ export class KalosSystemsTimer extends SinglePhasTimer {
   }
 
   getDefaultKeyBindingInfo() {
-    return [
-      { key: "F12", actionName: "Start/Add System" },
-      { key: "F11", actionName: "Remove System" },
-      { key: "F10", actionName: "Stop and Reset" },
-    ];
+    return DefaultKeyBindings;
   }
 
   getActions() {

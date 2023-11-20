@@ -1,25 +1,24 @@
-import { IndicatorWidgetStatus, WidgetsContainer } from "../constants.js";
+import { IndicatorWidgetStatus } from "../constants.js";
+import { Widget } from "./Widget.js";
 
-export class IndicatorWidget {
-  #widget;
+export class IndicatorWidget extends Widget {
   #status;
 
   constructor({ position }) {
-    this.#widget = document.createElement("div");
-    this.#widget.classList.add("indicator-widget", position);
+    super({ position });
+    this.classList.add("indicator-widget");
     this.off();
-    WidgetsContainer.appendChild(this.#widget);
   }
 
   on() {
-    this.#widget.classList.remove("indicator-off");
-    this.#widget.classList.add("indicator-on");
+    this.classList.remove("indicator-off");
+    this.classList.add("indicator-on");
     this.#status = IndicatorWidgetStatus.On;
   }
 
   off() {
-    this.#widget.classList.add("indicator-off");
-    this.#widget.classList.remove("indicator-on");
+    this.classList.add("indicator-off");
+    this.classList.remove("indicator-on");
     this.#status = IndicatorWidgetStatus.Off;
   }
 
@@ -31,10 +30,6 @@ export class IndicatorWidget {
     }
   }
   
-  remove() {
-    this.#widget.remove();
-  }
-
   get isOn() {
     return this.#status === IndicatorWidgetStatus.On;
   }

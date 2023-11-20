@@ -1,8 +1,12 @@
 import { SinglePhasTimer } from "../models/SinglePhaseTimer.js";
 import { Second } from "../constants.js";
 
+const DefaultKeyBindings = [
+  { key: "F12", actionName: "Start/Restart" }
+];
+
 export class KalosLaserSystemTimer extends SinglePhasTimer {
-  constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
+  constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
       initialDuration: Second * 15,
       urgencyDuration: Second * 3,
@@ -16,9 +20,7 @@ export class KalosLaserSystemTimer extends SinglePhasTimer {
   }
 
   getDefaultKeyBindingInfo() {
-    return [
-      { key: "F12", actionName: "Start/Restart" }
-    ];
+    return DefaultKeyBindings;
   }
 
   getActions() {

@@ -4,8 +4,12 @@ import {
 } from "../constants.js";
 import { SinglePhasTimer } from "../models/SinglePhaseTimer.js";
 
+const DefaultKeyBindings = [
+  { key: "F12", actionName: "Start/Restart" }
+];
+
 export class ErdaShowerTimer extends SinglePhasTimer {
-  constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
+  constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
       initialDuration: Minute,
       urgencyDuration: Second * 5,
@@ -15,9 +19,7 @@ export class ErdaShowerTimer extends SinglePhasTimer {
   }
 
   getDefaultKeyBindingInfo() {
-    return [
-      { key: "F12", actionName: "Start/Restart" }
-    ];
+    return DefaultKeyBindings;
   }
 
   getActions() {

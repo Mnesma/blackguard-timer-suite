@@ -42,7 +42,7 @@ p, h1 {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 144px) {
@@ -94,6 +94,18 @@ p, h1 {
   align-items: end;
 }
 
+.kalos-test-timer-text {
+  --text-color: #000000;
+  text-shadow: none !important;
+  font-weight: bold;
+  height: 24px;
+  width: 24px;
+  justify-self: end;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer-widget,
 .text-widget {
   color: var(--text-color);
   font-size: 18px;
@@ -192,7 +204,7 @@ p, h1 {
   text-shadow: 0 0 3px rgba(0, 0, 0, 1);
 }
 
-.key-bindings-view:not(.hidden) {
+.key-bindings-view {
   display: flex;
   flex-direction: column;
   padding-top: 16px;

@@ -5,8 +5,13 @@ import {
   TimerStatus
 } from "../constants.js";
 
+const DefaultKeyBindings = [
+  { key: "F12", actionName: "Start/Restart" },
+  { key: "F11", actionName: "Pause/Resume" }
+];
+
 export class FarmingTimer extends DoublePhaseTimer {
-  constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
+  constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
       initialDuration: Minute + HalfMinute,
       urgencyDuration: 0,
@@ -25,10 +30,7 @@ export class FarmingTimer extends DoublePhaseTimer {
   }
 
   getDefaultKeyBindingInfo() {
-    return [
-      { key: "F12", actionName: "Start/Restart" },
-      { key: "F11", actionName: "Pause/Resume" }
-    ];
+    return DefaultKeyBindings;
   }
 
   getActions() {

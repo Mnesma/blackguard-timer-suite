@@ -7,6 +7,12 @@ import {
 } from "../constants.js";
 import { TextWidget } from "../models/TextWidget.js";
 
+const DefaultKeyBindings = [
+  { key: "F12", actionName: "Start/Restart" },
+  { key: "F11", actionName: "Cycle Cooldowns" },
+  { key: "F10", actionName: "Reset" },
+];
+
 export class KalosBreathTimer extends SinglePhasTimer {
   #cooldowns = [
     Minute,
@@ -19,7 +25,7 @@ export class KalosBreathTimer extends SinglePhasTimer {
     position: WidgetLocation.TopRight
   })
 
-  constructor(keyBindingInfo = this.getDefaultKeyBindingInfo()) {
+  constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
       initialDuration: Minute + HalfMinute,
       urgencyDuration: Second * 5,
@@ -33,11 +39,7 @@ export class KalosBreathTimer extends SinglePhasTimer {
   }
 
   getDefaultKeyBindingInfo() {
-    return [
-      { key: "F12", actionName: "Start/Restart" },
-      { key: "F11", actionName: "Cycle Cooldowns" },
-      { key: "F10", actionName: "Reset" },
-    ];
+    return DefaultKeyBindings;
   }
 
   getActions() {
