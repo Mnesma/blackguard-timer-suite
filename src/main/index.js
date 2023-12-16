@@ -7,7 +7,7 @@ const path = require("path");
 const { timerNames, TimerName, TimerLabel, WindowType } = require("./constants");
 const { readFile, writeFile } = require("fs/promises");
 
-const debug = false;
+const debug = process.argv.includes("--with-dev-tools");
 const globalKeyboardListener = new GlobalKeyboardListener();
 const WM_MOUSEMOVE = 0x0200;
 const WM_LBUTTONUP = 0x0202;
@@ -65,12 +65,12 @@ const makeWindowFullyDraggable = (browserWindow) => {
 const listenForWillResize = (window) => {
   window.on("will-resize", (event) => {
     const timer = allTimers.get(window.webContents.id);
-    
+
     if (!timer.resizeable) {
       event.preventDefault();
     }
   });
-}
+};
 
 const getInitialWindowType = (timerName) => {
   switch (timerName) {
@@ -100,9 +100,19 @@ const getWindowSize = (windowType) => {
 const setWindowType = (timerId, newWindowType) => {
   const timer = allTimers.get(timerId);
   if (newWindowType !== timer.type) {
+    if (timer.type === WindowType.Timer) {
+      timer.size = timer.window.getContentSize();
+    }
+
     timer.type = newWindowType;
-    const { width, height } = getWindowSize(newWindowType);
-    timer.window.setSize(width, height);
+
+    if (newWindowType === WindowType.Timer && timer.size !== null) {
+      timer.window.setSize(...timer.size);
+      timer.size = null;
+    } else {
+      const { width, height } = getWindowSize(newWindowType);
+      timer.window.setSize(width, height);
+    }
   }
 }
 
@@ -138,7 +148,8 @@ const createWindow = (timerName = TimerName.Farming) => {
     loaded: false,
     name: timerName,
     transparent: true,
-    resizeable: false
+    resizeable: false,
+    size: null
   });
 
   setWindowType(id, windowType);
@@ -186,7 +197,7 @@ const createTrayMenu = (timerId) => {
     }}
   ]);
 
-  tray.setToolTip(timer.name);
+  tray.setToolTip(TimerLabel[timer.name]);
   tray.setContextMenu(contextMenu);
 }
 
@@ -249,6 +260,7 @@ const toggleResizeable = (timerId) => {
 const requestPermissionToLock = (timerId) => {
   const timer = allTimers.get(timerId);
   timer.window.webContents.send("request-lock-permission");
+  timer.size = timer.window.getContentSize();
 }
 
 const setLocked = (timerId, locked) => {
@@ -401,6 +413,7 @@ const listenForGetTimerType = () => {
 const listenForLockRequestApproval = () => {
   ipcMain.on("approve-lock-request", ({ sender }) => {
     setLocked(sender.id, true);
+    setWindowType(sender.id, WindowType.Timer);
   });
 };
 

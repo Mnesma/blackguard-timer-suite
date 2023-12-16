@@ -4,7 +4,7 @@
   "description": "A suite of timers used for Maplestory",
   "main": "src/main/index.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "electron-forge start -- --with-dev-tools",
     "make": "electron-forge make"
   },
   "author": "Mnesma",
@@ -16,7 +16,7 @@
     "@electron-forge/maker-squirrel": "6.4.2",
     "@electron-forge/maker-zip": "6.4.2",
     "@electron-forge/plugin-auto-unpack-natives": "6.4.2",
-    "electron": "26.2.0"
+    "electron": "^26.6.2"
   },
   "dependencies": {
     "electron-squirrel-startup": "1.0.0",

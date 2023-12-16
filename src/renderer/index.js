@@ -164,7 +164,6 @@ const initializeLockPermissionRequestsView = () => {
   lockButton.addEventListener("click", () => {
     setView(View.Timer);
     setLockIndicator(true);
-    Electron.setWindowType(WindowType.Timer);
     Electron.approveLockRequest();
   });
 

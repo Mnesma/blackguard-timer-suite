@@ -2,7 +2,6 @@ import { SinglePhasTimer } from "../models/SinglePhaseTimer.js";
 import { 
   Minute,
   Second,
-  TimerStatus,
   WidgetLocation
 } from "../constants.js";
 import { TextWidget } from "../models/TextWidget.js";

@@ -98,8 +98,8 @@ p, h1 {
   --text-color: #000000;
   text-shadow: none !important;
   font-weight: bold;
-  height: 24px;
-  width: 24px;
+  height: 12vw;
+  width: 12vw;
   justify-self: end;
   justify-content: center;
   align-items: center;
@@ -108,17 +108,17 @@ p, h1 {
 .timer-widget,
 .text-widget {
   color: var(--text-color);
-  font-size: 18px;
+  font-size: 9vw;
   text-shadow: 0 0 10px rgba(0, 0, 0, 1);
-  margin: 4px;
+  margin: 2vw;
 }
 
 .indicator-widget {
-  width: 24px;
-  height: 24px;
+  width: 12vw;
+  height: 12vw;
   border-radius: 50%;
   justify-self: end;
-  margin: 4px;
+  margin: 2vw;
 }
 .indicator-widget.indicator-on {
   background-color: #FFD100;
@@ -167,7 +167,7 @@ p, h1 {
 
 .duration-indicator {
   --background-color: var(--duration-indicator-color);
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 1));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
 }
 
 .urgent .duration-indicator {
@@ -193,13 +193,13 @@ p, h1 {
 }
 
 .time-remaining-label {
-  font-size: clamp(14px, 36vw, 72px);
-  line-height: clamp(14px, 27vw, 54px);
+  font-size: max(14px, 36vw);
+  line-height: max(14px, 27vw);
   text-shadow: 0 0 10px rgba(0, 0, 0, 1);
 }
 
 .name-label {
-  font-size: clamp(0px, 6vw, 12px);
+  font-size: max(0px, 6vw);
   font-weight: bold;
   text-shadow: 0 0 3px rgba(0, 0, 0, 1);
 }
