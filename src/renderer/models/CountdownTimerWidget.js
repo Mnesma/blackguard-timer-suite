@@ -39,24 +39,24 @@ export class CountdownTimerWidget extends Widget {
   #tick() {
     const before = Date.now();
     this.#timer = setTimeout(() => {
-      if (this.#status === TimerStatus.Active) {
+      if (this.status !== TimerStatus.Paused) {
         const after = Date.now();
         const delta = after - before;
-        this.#elapsedTime = Math.max(this.#elapsedTime + delta, 0);
+        this.#elapsedTime = this.#elapsedTime + delta;
         this.#draw(this.#elapsedTime);
       }
-
+      
       if (this.#elapsedTime >= this.#duration && this.#status !== TimerStatus.Inactive) {
         this.#status = TimerStatus.Inactive;
         this.#emitTimerEnd();
-      } else if (this.#status !== TimerStatus.Inactive) {
-        this.#tick();
       }
+
+      this.#tick();
     }, TickRate);
   }
 
   #draw(time) {
-    this.textContent = Math.max(Math.round((this.#duration - time) / Second), 0);
+    this.textContent = Math.round((this.#duration - time) / Second);
   }
 
   #emitTimerEnd() {

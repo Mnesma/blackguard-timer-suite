@@ -7,7 +7,12 @@ import { ButtonContainer } from "./models/ButtonContainer.js";
 import { KalosSystemsTimer } from "./timers/KalosSystemsTimer.js";
 import { KalosLaserSystemTimer } from "./timers/KalosLaserSystemTimer.js";
 import { KalosArrowSystemTimer } from "./timers/KalosArrowSystemTimer.js";
-import { ErdaShowerTimer } from "./timers/ErdaShowerTimer.js";
+import { FortySecondTimer } from "./timers/fortySecondTimer.js";
+import { SixtySecondTimer } from "./timers/SixtySecondTimer.js";
+import { FiftySecondTimer } from "./timers/FiftySecondTimer.js";
+import { ThirtySecondTimer } from "./timers/ThirtySecondTimer.js";
+import { TwentySecondTimer } from "./timers/TwentySecondTimer.js";
+import { TenSecondTimer } from "./timers/TenSecondTimer.js";
 
 let currentTimer = null;
 
@@ -20,7 +25,12 @@ const timers = {
   [TimerName.KalosSystems]: KalosSystemsTimer,
   [TimerName.KalosLaserSystem]: KalosLaserSystemTimer,
   [TimerName.KalosArrowSystem]: KalosArrowSystemTimer,
-  [TimerName.ErdaShower]: ErdaShowerTimer
+  [TimerName.SixtySeconds]: SixtySecondTimer,
+  [TimerName.FiftySeconds]: FiftySecondTimer,
+  [TimerName.FortySeconds]: FortySecondTimer,
+  [TimerName.ThirtySeconds]: ThirtySecondTimer,
+  [TimerName.TwentySeconds]: TwentySecondTimer,
+  [TimerName.TenSeconds]: TenSecondTimer,
 };
 
 const setLockIndicator = (locked) => {

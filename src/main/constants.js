@@ -5,7 +5,12 @@ const TimerName = {
   "KalosSystems": "kalosSystems",
   "KalosLaserSystem": "kalosLaserSystem",
   "KalosArrowSystem": "kalosArrowSystem",
-  "ErdaShower": "erdaShower"
+  "SixtySeconds": "sixtySeconds",
+  "FiftySeconds": "fiftySeconds",
+  "FortySeconds": "fortySeconds",
+  "ThirtySeconds": "thirtySeconds",
+  "TwentySeconds": "twentySeconds",
+  "TenSeconds": "tenSeconds",
 };
 
 const timerNames = [
@@ -19,7 +24,12 @@ const TimerLabel = {
   [TimerName.KalosSystems]: "Kalos Systems",
   [TimerName.KalosLaserSystem]: "Kalos Laser System",
   [TimerName.KalosArrowSystem]: "Kalos Arrow System",
-  [TimerName.ErdaShower]: "Erda Shower"
+  [TimerName.SixtySeconds]: "60 Seconds",
+  [TimerName.FiftySeconds]: "50 Seconds",
+  [TimerName.FortySeconds]: "40 Seconds",
+  [TimerName.ThirtySeconds]: "30 Seconds",
+  [TimerName.TwentySeconds]: "20 Seconds",
+  [TimerName.TenSeconds]: "10 Seconds"
 };
 
 const WindowType = {

@@ -10,8 +10,10 @@ import { CountdownTimerWidget } from "../models/CountdownTimerWidget.js";
 
 const DefaultKeyBindings = [
   { key: "F12", actionName: "Start/Restart" },
-  { key: "F11", actionName: "Add Bind Time" },
-  { key: "F10", actionName: "Pause For Test" },
+  { key: "F11", actionName: "Add 10s Bind Time" },
+  { key: "F13", actionName: "Add 15s Bind Time" },
+  { key: "F10", actionName: "Add Test Time" },
+  { key: "F9", actionName: "Remove Test Time" },
 ];
 
 export class KalosFMATimer extends SinglePhasTimer {
@@ -23,6 +25,8 @@ export class KalosFMATimer extends SinglePhasTimer {
     duration: Second * 50,
     position: WidgetLocation.TopRight,
   });
+
+  #testTimer;
 
   constructor(keyBindingInfo = DefaultKeyBindings) {
     super({
@@ -47,36 +51,50 @@ export class KalosFMATimer extends SinglePhasTimer {
         this.start();
         this.#stopTest();
       },
-      "Add Bind Time": () => {
+      "Add 10s Bind Time": () => {
         if (this.status !== TimerStatus.Inactive) {
+          this.setDuration(Second * 10)
+        } else {
           this.adjustDuration(Second * 10);
         }
       },
-      "Pause For Test": () => {
+      "Add 15s Bind Time": () => {
         if (this.status !== TimerStatus.Inactive) {
-        
-          if (this.#testIndicatorWidget.isOn) {
-            this.#stopTest();
-          } else {
-            this.#startTest();
-          }
+          this.setDuration(Second * 15)
+        } else {
+          this.adjustDuration(Second * 15);
         }
+      },
+      "Add Test Time": () => {
+        if (this.status !== TimerStatus.Inactive) {
+          this.setDuration(Second * 50);
+        } else {
+          this.adjustDuration(Second * 50);
+        }
+        this.#startTest();
+      },
+      "Remove Test Time": () => {
+        this.adjustDuration(-Second * 50);
+        this.#stopTest();
       }
     }
   }
 
   #startTest() {
     this.#testIndicatorWidget.on();
-    this.pause();
     this.#testTimerWidget.show();
     this.#testTimerWidget.start();
+    clearTimeout(this.#testTimer);
+    this.#testTimer = setTimeout(() => {
+      this.#stopTest();
+    }, Second * 50)
   }
 
   #stopTest = () => {
     this.#testIndicatorWidget.off();
-    this.resume();
     this.#testTimerWidget.hide();
     this.#testTimerWidget.stop();
+    clearTimeout(this.#testTimer);
   };
 
   getWidgets() {

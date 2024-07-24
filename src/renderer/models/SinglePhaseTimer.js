@@ -71,17 +71,18 @@ export class SinglePhasTimer extends EventTarget {
   }
 
   adjustElapsedTime(adjustmentAmount) {
-    if (this.#status !== TimerStatus.Inactive) {
-      this.#elapsedTime = Math.max(this.#elapsedTime + adjustmentAmount, 0);
-      this.#draw();
-    }
+    this.#elapsedTime = this.#elapsedTime + adjustmentAmount;
+    this.#draw();
   }
 
   adjustDuration(adjustmentAmount) {
-    if (this.#status !== TimerStatus.Inactive) {
-      this.#duration = Math.max(this.#duration + adjustmentAmount, 0);
-      this.#draw();
-    }
+    this.#duration = this.#duration + adjustmentAmount;
+    this.#draw();
+  }
+
+  setDuration(time) {
+    this.#duration = time;
+    this.#draw();
   }
 
   setInitialDuration(newInitialDuration) {
@@ -154,7 +155,7 @@ export class SinglePhasTimer extends EventTarget {
   #tick() {
     const before = Date.now();
     this.#timeout = setTimeout(() => {
-      if (this.#status === TimerStatus.Active) {
+      if (this.status !== TimerStatus.Paused) {
         const after = Date.now();
         const delta = after - before;
         this.adjustElapsedTime(delta);
@@ -170,16 +171,16 @@ export class SinglePhasTimer extends EventTarget {
       if (this.#elapsedTime >= this.#duration && this.#status !== TimerStatus.Inactive) {
         this.#status = TimerStatus.Inactive;
         this.#emitTimerEnd();
-      } else if (this.#status !== TimerStatus.Inactive) {
-        this.#tick();
       }
+
+      this.#tick();
     }, TickRate);
   }
 
   #draw() {
     const progressPercent = this.#elapsedTime * 100 / this.#duration || 0;
     const circumference = 508.68;
-    const secondsRemaining = Math.max(Math.round(this.timeRemaining / Second), 0);
+    const secondsRemaining = Math.round(this.timeRemaining / Second);
     SinglePhasTimer.#RemainingTimeIndicatorElement.setAttribute("stroke-dashoffset", `${Math.max((100 - progressPercent) * circumference / 100, 0)}px`);
     SinglePhasTimer.#RemainingTimeLabelElement.textContent = secondsRemaining;
   }
