@@ -1,7 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: "./src/renderer/icon",
+    icon: "./dist/icon",
     win32metadata: {
       "requested-execution-level": "requireAdministrator"
     }

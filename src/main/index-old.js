@@ -8,7 +8,7 @@ const { timerNames, TimerName, TimerLabel, WindowType } = require("./constants")
 const { readFile, writeFile } = require("fs/promises");
 
 const debug = process.argv.includes("--with-dev-tools");
-const globalKeyboardListener = new GlobalKeyboardListener();
+const globalKeyboardListener =;
 const WM_MOUSEMOVE = 0x0200;
 const WM_LBUTTONUP = 0x0202;
 const MK_LBUTTON = 0x0001;

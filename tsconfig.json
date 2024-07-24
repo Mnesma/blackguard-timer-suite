@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "esnext",
+        "esModuleInterop": true,
+        "lib": [
+            "esnext"
+        ]
+    },
+    "include": [
+        "src/shared/**/*.ts"
+    ]
+}
