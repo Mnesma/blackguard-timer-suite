@@ -7,7 +7,7 @@ import { ButtonContainer } from "./models/ButtonContainer.js";
 import { KalosSystemsTimer } from "./timers/KalosSystemsTimer.js";
 import { KalosLaserSystemTimer } from "./timers/KalosLaserSystemTimer.js";
 import { KalosArrowSystemTimer } from "./timers/KalosArrowSystemTimer.js";
-import { FortySecondTimer } from "./timers/fortySecondTimer.js";
+import { FortySecondTimer } from "./timers/FortySecondTimer.js";
 import { SixtySecondTimer } from "./timers/SixtySecondTimer.js";
 import { FiftySecondTimer } from "./timers/FiftySecondTimer.js";
 import { ThirtySecondTimer } from "./timers/ThirtySecondTimer.js";
