@@ -2,7 +2,9 @@
     "compilerOptions": {
         "strict": true,
         "target": "esnext",
+        "module": "nodenext",
         "esModuleInterop": true,
+        "moduleResolution": "nodenext",
         "lib": [
             "esnext"
         ]

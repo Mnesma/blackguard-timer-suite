@@ -5,11 +5,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
 
 const config = {
-    entry: "./src/renderer/index.ts",
-    target: "electron-renderer",
+    entry: {
+        index: "./src/renderer/index.ts",
+        aaaaaaaa: "./src/renderer/preload.ts"
+    },
+    target: "electron-main",
     output: {
         path: path.resolve(__dirname, "dist/renderer"),
-        filename: "index.js"
+        filename: "[name].js"
     },
     plugins: [
         new MiniCssExtractPlugin({
