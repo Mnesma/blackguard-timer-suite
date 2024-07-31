@@ -1,3 +1,4 @@
+import { minute, second } from "../shared/constants";
 import {
     branch,
     choice,
@@ -5,7 +6,6 @@ import {
     end,
     flatten,
     join,
-    letters,
     lineBreaks,
     literal,
     maybe,
@@ -13,62 +13,63 @@ import {
     seperated,
     sequence,
     some,
+    Tag,
+    tag,
+    toNumber,
     trim,
     whiteSpaces
-} from "./base-parser-combinators";
+} from "./parser-combinators";
 
-const Title = Symbol("Title");
-const KeyBinding = Symbol("KeyBinding");
-const Variable = Symbol("Variable");
-const Countdown = Symbol("Countdown");
-const Widget = Symbol("Widget");
+const titleTag = Symbol("title");
+const keyBindingTag = Symbol("keyBinding");
+const countdownTag = Symbol("countdown");
+const timeTag = Symbol("time");
 
-const List = Symbol("List");
-const Time = Symbol("Time");
+type PrimitiveValue = string | number | (string | number)[];
 
-const tag = (tag: symbol) => (result: any) => ({
-    tag,
-    value: result
-});
+export type ParsedBgscript = {
+    title: string;
+    countdowns: PrimitiveValue[][];
+    keyBindings: PrimitiveValue[][];
+};
 
-const toNumber = (result: any) => Number(result);
+type BgscriptTag = { tag: symbol; value: PrimitiveValue[]; };
 
-const text = literal(/^[^\s(),:]+/);
+class Primitive {
+    static Text = literal(/^[^\s(),:]+/);
 
-const spacing = literal(/^( |\t)+/);
+    static Name = literal(/^([^\s(),]|( |\t))+/);
 
-const indent = literal(/^( ){4}|\t/).dispose();
+    static Spacing = literal(/^( |\t)+/);
 
-const name = literal(/^([^\s(),]|( |\t))+/);
+    static Indent = literal(/^( ){4}|\t/).dispose();
 
-const twoDigets = literal(/^[0-9]{2}/);
-const oneOrTwoDigets = literal(/^[0-9]{1,2}/);
+    static Time = sequence(
+        literal(/^[0-9]{1,2}/).map(toNumber),
+        join(
+            "",
+            literal(":").dispose(),
+            literal(/^[0-9]{2}/)
+        ).map(toNumber)
+    )
+        .map(([minutes, seconds]) => (minutes * minute + seconds * second))
+        .map(tag(timeTag));
+}
 
-const time = sequence(
-    oneOrTwoDigets.map(toNumber),
-    join(
-        "",
-        literal(":").dispose(),
-        twoDigets
-    ).map(toNumber)
-)
-    .map(([minutes, seconds]) => (minutes * 60 * 1000 + seconds * 1000))
-    .map(tag(Time));
-
-const actionParser = compact(
-    text.onFail("An action must have a valid method"),
+const GenericAction = compact(
+    Primitive.Text.onFail("An action must have a valid method"),
     maybe(
         sequence(
-            spacing.dispose().onFail(
+            Primitive.Spacing.dispose().onFail(
                 "Expected spacing between method and parameters"
             ),
             seperated(
-                text,
-                spacing
+                Primitive.Text,
+                Primitive.Spacing
             )
         )
     ),
-    maybe(spacing).dispose(),
+    maybe(Primitive.Spacing).dispose(),
     choice(
         lineBreaks.dispose(),
         end
@@ -79,195 +80,136 @@ const actionParser = compact(
         params
     }));
 
-const keyBindingDefinitionParser = compact(
-    spacing.dispose().onFail("Expected spacing operator and key code"),
-    text.onFail("Invalid key code"),
-    spacing.dispose().onFail(
-        "Expected spacing between key code and binding name"
-    ),
-    trim(name).onFail("Invalid key binding name"),
-    maybe(spacing).dispose(),
-    lineBreaks.dispose().onFail("Expected line break")
-)
-    .map(([key, name]) => ({
-        key,
-        name
-    }));
+class KeyBinding {
+    static Operator = literal("#").dispose();
 
-const keyBindingParser = flatten(compact(
-    literal("#").dispose(),
-    required(sequence(
-        keyBindingDefinitionParser,
-        some(
-            branch(
-                indent,
-                required(actionParser)
-            )
-        ).onFail("Could not find key binding actions")
-    ))
-))
-    .map(([definition, actions]) => ({ definition, actions }))
-    .map(tag(KeyBinding));
-
-const list = compact(
-    literal("(").dispose(),
-    maybe(spacing).dispose(),
-    seperated(
-        letters,
-        sequence(
-            maybe(spacing),
-            literal(","),
-            maybe(spacing)
-        )
-    ),
-    maybe(spacing).dispose(),
-    literal(")").dispose()
-).map(tag(List));
-
-const variableParser = flatten(compact(
-    literal("$").dispose(),
-    required(sequence(
-        spacing.dispose().onFail(
-            "Expected spacing between operator and variable name"
+    static Definition = compact(
+        Primitive.Spacing.dispose().onFail(
+            "Expected spacing operator and key code"
         ),
-        text.onFail("Invalid variable name"),
-        spacing.dispose().onFail(
-            "Expected spacing between variable name and variable value"
+        Primitive.Text.onFail("Invalid key code"),
+        Primitive.Spacing.dispose().onFail(
+            "Expected spacing between key code and binding name"
+        ),
+        trim(Primitive.Name).onFail("Invalid key binding name"),
+        maybe(Primitive.Spacing).dispose(),
+        lineBreaks.dispose().onFail("Expected line break")
+    )
+        .map(([key, name]) => ({
+            key,
+            name
+        }));
+
+    static Parser = flatten(compact(
+        KeyBinding.Operator,
+        required(sequence(
+            KeyBinding.Definition,
+            some(branch(
+                Primitive.Indent,
+                required(GenericAction)
+            )).onFail("Could not find key binding actions")
+        ))
+    ))
+        .map(([definition, actions]) => ({ definition, actions }))
+        .map(tag<BgscriptTag>(keyBindingTag));
+}
+
+class Countdown {
+    static Operator = literal(">").dispose();
+
+    static ActionOperator = literal("@");
+
+    static Definition = compact(
+        Primitive.Spacing.dispose().onFail(
+            "Expected spacing between operator and countdown name"
+        ),
+        Primitive.Text.onFail("Invalid countdown name"),
+        maybe(Primitive.Spacing).dispose(),
+        lineBreaks.dispose().onFail("Expected line break")
+    )
+        .map(([name]) => ({ name }));
+
+    static Action = compact(
+        Primitive.Spacing.dispose().onFail(
+            "Expected spacing between operator and time"
         ),
         choice(
-            time,
-            list,
-            text
-        ).onFail("Invalid variable value"),
-        maybe(spacing).dispose(),
+            Primitive.Time,
+            Primitive.Text
+        ).onFail("Invalid time value"),
+        Primitive.Spacing.dispose().onFail(
+            "Expected spacing between time and method"
+        ),
+        Primitive.Text.onFail("An action must have a valid method"),
+        maybe(Primitive.Spacing).dispose(),
+        seperated(
+            Primitive.Text,
+            Primitive.Spacing
+        ),
+        maybe(Primitive.Spacing).dispose(),
         choice(
             lineBreaks.dispose(),
             end
         ).onFail("Expected line break or end of file")
-    ))
-))
-    .map(([name, value]) => ({ name, value }))
-    .map(tag(Variable));
-
-const countdownDefinitionParser = compact(
-    spacing.dispose().onFail(
-        "Expected spacing between operator and countdown name"
-    ),
-    text.onFail("Invalid countdown name"),
-    maybe(spacing).dispose(),
-    lineBreaks.dispose().onFail("Expected line break")
-)
-    .map(([name]) => ({ name }));
-
-const countdownActionParser = compact(
-    spacing.dispose().onFail("Expected spacing between operator and time"),
-    choice(
-        time,
-        text
-    ).onFail("Invalid time value"),
-    spacing.dispose().onFail("Expected spacing between time and method"),
-    text.onFail("An action must have a valid method"),
-    maybe(spacing).dispose(),
-    seperated(
-        text,
-        spacing
-    ),
-    maybe(spacing).dispose(),
-    choice(
-        lineBreaks.dispose(),
-        end
-    ).onFail("Expected line break or end of file")
-)
-    .map(([method, time, params]) => ({
-        method,
-        time,
-        params
-    }));
-
-const countdownParser = flatten(compact(
-    literal(">").dispose(),
-    required(sequence(
-        countdownDefinitionParser,
-        some(
-            branch(
-                sequence(
-                    indent,
-                    literal("@")
-                ),
-                required(countdownActionParser)
-            )
-        ).onFail("Could not find countdown actions")
-    ))
-))
-    .map(([definition, actions]) => ({ definition, actions }))
-    .map(tag(Countdown));
-
-const widgetDefinitionParser = compact(
-    spacing.dispose().onFail(
-        "Expected spacing between operator and widget name"
-    ),
-    text.onFail("Invalid widget name"),
-    maybe(spacing).dispose(),
-    lineBreaks.dispose().onFail("Expected line break")
-)
-    .map(([name]) => ({ name }));
-
-const widgetParser = flatten(compact(
-    literal("&").dispose(),
-    required(sequence(
-        widgetDefinitionParser,
-        some(
-            branch(
-                indent,
-                required(actionParser)
-            )
-        ).onFail("Could not find widget actions")
-    ))
-))
-    .map(([definition, actions]) => ({ definition, actions }))
-    .map(tag(Widget));
-
-export const bgscriptParser = compact(
-    maybe(whiteSpaces).dispose(),
-    trim(name).map(tag(Title)).onFail("A valid title is required"),
-    maybe(whiteSpaces).dispose(),
-    seperated(
-        choice(
-            keyBindingParser,
-            variableParser,
-            countdownParser,
-            widgetParser
-        ),
-        maybe(whiteSpaces)
     )
-)
-    .map(([title, body]) => ({ title, body }));
+        .map(([method, time, params]) => ({
+            method,
+            time,
+            params
+        }));
 
-// const sample = `
+    static Parser = flatten(compact(
+        Countdown.Operator,
+        required(sequence(
+            Countdown.Definition,
+            some(
+                branch(
+                    sequence(
+                        Primitive.Indent,
+                        Countdown.ActionOperator
+                    ),
+                    required(Countdown.Action)
+                )
+            ).onFail("Could not find countdown actions")
+        ))
+    ))
+        .map(([definition, actions]) => ({ definition, actions }))
+        .map(tag<BgscriptTag>(countdownTag));
+}
 
-// Title
+export class Bgscript {
+    static Parser = compact(
+        maybe(whiteSpaces).dispose(),
+        trim(Primitive.Name).map(tag<BgscriptTag>(titleTag)).onFail(
+            "A valid title is required"
+        ),
+        maybe(whiteSpaces).dispose(),
+        seperated(
+            choice(
+                KeyBinding.Parser,
+                Countdown.Parser
+            ),
+            maybe(whiteSpaces)
+        )
+    )
+        .map(([title, body]: [string, BgscriptTag[]]) => {
+            const parsedScript: ParsedBgscript = {
+                title,
+                countdowns: [],
+                keyBindings: []
+            };
 
-// # key bindingName
-//     action
-//     action param
-//     action param param
+            for (const block of body) {
+                switch (block.tag) {
+                    case countdownTag:
+                        parsedScript.countdowns.push(block.value);
+                        break;
+                    case keyBindingTag:
+                        parsedScript.keyBindings.push(block.value);
+                        break;
+                }
+            }
 
-// $ variableName value
-
-// & widgetName
-//     key value
-//     key value value
-
-// > timer1
-//     @ 1:30 reset
-//     @ 2:00 goTo timer2
-
-// > timer2
-//     @ :00 markUrgent
-//     @ 0:30 reset
-//     @ 0:30 goTo timer1`;
-
-// console.log("Making timer");
-// const timer = bgscriptParser.parse(sample);
-// console.log("Done making timer");
-// console.log("timer:", timer);
+            return parsedScript;
+        });
+}

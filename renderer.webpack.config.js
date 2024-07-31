@@ -7,9 +7,9 @@ const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
 const config = {
     entry: {
         index: "./src/renderer/index.ts",
-        aaaaaaaa: "./src/renderer/preload.ts"
+        preload: "./src/renderer/preload.ts"
     },
-    target: "electron-main",
+    target: "electron-renderer",
     output: {
         path: path.resolve(__dirname, "dist/renderer"),
         filename: "[name].js"
@@ -21,7 +21,8 @@ const config = {
         new HtmlWebpackPlugin({
             title: "Blackguard Timer Suite",
             scriptLoading: "module",
-            template: "src/renderer/index.html"
+            template: "src/renderer/index.html",
+            excludeChunks: ["preload"]
         })
     ],
     module: {

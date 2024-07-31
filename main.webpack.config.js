@@ -2,11 +2,16 @@ const path = require("path");
 const process = require("process");
 
 const config = {
-    entry: "./src/main/index.ts",
+    entry: {
+        index: "./src/main/index.ts"
+    },
     target: "electron-main",
     output: {
         path: path.resolve(__dirname, "dist/main"),
-        filename: "index.js"
+        filename: "[name].js"
+    },
+    externals: {
+        "node-global-key-listener": "commonjs node-global-key-listener"
     },
     module: {
         rules: [

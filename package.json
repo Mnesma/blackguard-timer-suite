@@ -37,7 +37,7 @@
     "dependencies": {
         "electron-squirrel-startup": "1.0.1",
         "leac": "0.6.0",
-        "node-global-key-listener": "0.3.0",
+        "node-global-key-listener": "0.1.1",
         "peberminta": "0.9.0",
         "typescript": "5.5.3"
     }

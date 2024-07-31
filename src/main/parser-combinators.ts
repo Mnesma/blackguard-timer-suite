@@ -1,4 +1,4 @@
-enum StateStatus {
+export enum StateStatus {
     Good = "good",
     Bad = "bad",
     Fatal = "fatal"
@@ -11,6 +11,8 @@ export type ParserState = {
     status: StateStatus;
     error: ParseError | null;
 };
+
+export type Tag = { tag: symbol; value: any; };
 
 export type Transformer = (initialState: ParserState) => ParserState;
 
@@ -573,3 +575,10 @@ export const end = new Parser((initialState) => {
         status: StateStatus.Bad
     };
 });
+
+export const toNumber = (result: any) => Number(result);
+
+export const tag = <T = Tag>(tag: symbol) => (result: any): T => ({
+    tag,
+    value: result
+} as T);

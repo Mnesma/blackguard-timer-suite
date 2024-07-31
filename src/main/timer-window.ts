@@ -4,8 +4,8 @@ import {
     IGlobalKeyEvent
 } from "node-global-key-listener";
 import path from "node:path";
-import { Application } from "../../shared/new/application";
-import { EventName } from "../../shared/new/constants";
+import { Application } from "../shared/application";
+import { EventName } from "../shared/constants";
 
 export type TimerWindowOptions = {
     title: string;
@@ -42,8 +42,7 @@ export class TimerWindow {
             title,
             webPreferences: {
                 devTools: true,
-                nodeIntegration: true,
-                preload: path.join(__dirname, "../renderer/aaaaaaaaa.js")
+                preload: path.join(__dirname, "../renderer/preload.js")
             }
         });
 

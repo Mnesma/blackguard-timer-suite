@@ -2,28 +2,38 @@ import {
     ipcMain,
     IpcMainEvent,
     Menu,
+    MenuItem,
     MenuItemConstructorOptions
 } from "electron";
-import { EventName } from "../shared/event-name";
-import { State } from "./state";
+import { EventName } from "../shared/constants";
+import { TimerWindowManager } from "./timer-window-manager";
+
+export type ContextMenuManagerOptions = {
+    timerWindowManager: TimerWindowManager;
+};
 
 export class ContextMenuManager {
-    constructor() {
-        ipcMain.on(EventName.SHOW_CONTEXT_MENU, this.show);
+    private timerWindowManager: TimerWindowManager;
+
+    constructor({ timerWindowManager }: ContextMenuManagerOptions) {
+        this.timerWindowManager = timerWindowManager;
+
+        ipcMain.on(EventName.SHOW_CONTEXT_MENU, this.createContextMenu);
     }
 
-    private show = ({ sender }: IpcMainEvent) => {
-        const [senderInstance] = State.getInstance(sender.id);
+    private createContextMenu = ({ sender }: IpcMainEvent) => {
+        const { id } = sender;
+        const timerWindow = this.timerWindowManager.get(id);
 
-        if (!senderInstance) {
+        if (!timerWindow) {
             return;
         }
 
-        const menuTemplate: MenuItemConstructorOptions[] = [];
+        const menuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [];
 
         menuTemplate.push({ role: "close" });
 
         const menu = Menu.buildFromTemplate(menuTemplate);
-        menu.popup({ window: senderInstance.window });
+        menu.popup({ window: timerWindow.browserWindow });
     };
 }
