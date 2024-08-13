@@ -76,12 +76,24 @@ export class SinglePhasTimer extends EventTarget {
   }
 
   adjustDuration(adjustmentAmount) {
-    this.#duration = this.#duration + adjustmentAmount;
+    this.#duration += adjustmentAmount;
     this.#draw();
   }
 
-  setDuration(time) {
-    this.#duration = time;
+  setElapsedTime(time) {
+    let newElapsedTime = this.#duration - time;
+
+    if (newElapsedTime < 0) {
+      this.adjustDuration(Math.abs(newElapsedTime));
+      newElapsedTime = 0;
+    }
+
+    this.#elapsedTime = newElapsedTime;
+    
+    if (this.status === TimerStatus.Inactive) {
+      this.#status = TimerStatus.Active;
+    }
+
     this.#draw();
   }
 

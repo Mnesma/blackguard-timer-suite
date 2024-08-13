@@ -35,7 +35,7 @@ export class IndicatorWidget extends Widget {
   }
 
   get isOff() {
-    return !this.isOn();
+    return !this.isOn;
   }
 
 }

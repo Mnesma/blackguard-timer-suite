@@ -53,27 +53,31 @@ export class KalosFMATimer extends SinglePhasTimer {
       },
       "Add 10s Bind Time": () => {
         if (this.status !== TimerStatus.Inactive) {
-          this.setDuration(Second * 10)
-        } else {
           this.adjustDuration(Second * 10);
+        } else {
+          this.setElapsedTime(Second * 10)
         }
       },
       "Add 15s Bind Time": () => {
         if (this.status !== TimerStatus.Inactive) {
-          this.setDuration(Second * 15)
-        } else {
           this.adjustDuration(Second * 15);
+        } else {
+          this.setElapsedTime(Second * 15)
         }
       },
       "Add Test Time": () => {
         if (this.status !== TimerStatus.Inactive) {
-          this.setDuration(Second * 50);
-        } else {
           this.adjustDuration(Second * 50);
+        } else {
+          this.setElapsedTime(Second * 50);
         }
         this.#startTest();
       },
       "Remove Test Time": () => {
+        if (this.#testIndicatorWidget.isOff) {
+          return;
+        }
+
         this.adjustDuration(-Second * 50);
         this.#stopTest();
       }
